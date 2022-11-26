@@ -9,7 +9,7 @@ import pdfkit
 from jinja2 import Environment, FileSystemLoader
 
 class Vacancy:
-    currency_rub = {
+    currency_to_rub = {
         "AZN": 35.68,
         "BYR": 23.91,
         "EUR": 59.90,
@@ -27,7 +27,7 @@ class Vacancy:
         self.salary_from = int(float(vacancy['salary_from']))
         self.salary_to = int(float(vacancy['salary_to']))
         self.salary_currency = vacancy['salary_currency']
-        self.salary_average = self.currency_rub[self.salary_currency] * (self.salary_from + self.salary_to) / 2
+        self.salary_average = self.currency_to_rub[self.salary_currency] * (self.salary_from + self.salary_to) / 2
         self.area_name = vacancy['area_name']
         self.year = int(vacancy['published_at'][:4])
 
@@ -37,8 +37,8 @@ class DataSet:
         self.vacancy_name = vacancy_name
 
     def csv_reader(self):
-        with open(self.file_name, mode='r', encoding='utf-8-sig') as file:
-            reader = csv.reader(file)
+        with open(self.file_name, mode='r', encoding='utf-8-sig') as File:
+            reader = csv.reader(File)
             header = next(reader)
             header_length = len(header)
             for i in reader:
@@ -102,18 +102,27 @@ class DataSet:
         print('Уровень зарплат по городам (в порядке убывания): {0}'.format(statistics5))
         print('Доля вакансий по городам (в порядке убывания): {0}'.format(statistics6))
 
-
 class InputConnect:
-    def __init__(self):
-        self.file_name = input('Введите название файла: ')
-        self.vacancy_name = input('Введите название профессии: ')
+    def __init__(self, file_name=None, vacancy_name=None):
+        self.file_name = input('Введите название файла: ') if file_name is None else file_name
+        self.vacancy_name = input('Введите название профессии: ') if vacancy_name is None else vacancy_name
+
+    def generate_statistics(self, is_print=False):
         dataset = DataSet(self.file_name, self.vacancy_name)
         statistics1, statistics2, statistics3, statistics4, statistics5, statistics6 = dataset.get_statistic()
-        dataset.print_statistic(statistics1, statistics2, statistics3, statistics4, statistics5, statistics6)
+        if is_print:
+            dataset.print_statistic(statistics1, statistics2, statistics3, statistics4, statistics5, statistics6)
+        return statistics1, statistics2, statistics3, statistics4, statistics5, statistics6
+
+    def generate_vacancies(self, statistics1, statistics2, statistics3, statistics4, statistics5, statistics6):
         rep = Report(self.vacancy_name, statistics1, statistics2, statistics3, statistics4, statistics5, statistics6)
         rep.generate_excel()
         rep.generate_image()
         rep.generate_pdf()
+
+    def generate_all(self):
+        statistics1, statistics2, statistics3, statistics4, statistics5, statistics6 = self.generate_statistics(True)
+        self.generate_vacancies(statistics1, statistics2, statistics3, statistics4, statistics5, statistics6)
 
 class Report:
     def __init__(self, vacancy_name, statistics1, statistics2, statistics3, statistics4, statistics5, statistics6):
@@ -130,12 +139,12 @@ class Report:
         statistic = self.wb.active
         statistic.title = 'Статистика по годам'
         statistic.append(['Год', 'Средняя зарплата', 'Средняя зарплата - ' + self.vacancy_name, 'Количество вакансий', 'Количество вакансий - ' + self.vacancy_name])
-        for x in self.statistics1.keys():
-            statistic.append([x, self.statistics1[x], self.statistics3[x], self.statistics2[x], self.statistics4[x]])
+        for i in self.statistics1.keys():
+            statistic.append([i, self.statistics1[i], self.statistics3[i], self.statistics2[i], self.statistics4[i]])
         data = [['Год ', 'Средняя зарплата ', ' Средняя зарплата - ' + self.vacancy_name, ' Количество вакансий', ' Количество вакансий - ' + self.vacancy_name]]
         column = []
-        for x in data:
-            for x, y in enumerate(x):
+        for i in data:
+            for x, y in enumerate(i):
                 if len(column) > x:
                     if len(y) > column[x]:
                         column[x] = len(y)
@@ -153,7 +162,7 @@ class Report:
         column = []
         for i in data:
             for x, y in enumerate(i):
-                y = str(y)
+                cell = str(y)
                 if len(column) > x:
                     if len(y) > column[x]:
                         column[x] = len(y)
@@ -171,8 +180,8 @@ class Report:
         for i in range(len(data)):
             for j in 'ABDE':
                 statistics[j + str(i + 1)].border = Border(left=side, bottom=side, right=side, top=side)
-        for i, _ in enumerate(self.statistics1):
-            for j in 'ABCDE':
+        for i, _ in enumerate(self.stats1):
+            for i in 'ABCDE':
                 statistic[j + str(i + 1)].border = Border(left=side, bottom=side, right=side, top=side)
         self.wb.save(filename='report.xlsx')
 
@@ -195,13 +204,13 @@ class Report:
         ax2.xaxis.set_tick_params(labelsize=8)
         ax2.yaxis.set_tick_params(labelsize=8)
         ax3.set_title('Уровень зарплат по городам', fontdict={'fontsize': 8})
-        ax3.barh(list([str(i).replace(' ', '\n').replace('-', '-\n') for i in reversed(list(self.statistics5.keys()))]), list(reversed(list(self.statistics5.values()))), color='blue', height=0.5, align='center')
+        ax3.barh(list([str(x).replace(' ', '\n').replace('-', '-\n') for x in reversed(list(self.statistics5.keys()))]), list(reversed(list(self.stats5.values()))), color='blue', height=0.5, align='center')
         ax3.yaxis.set_tick_params(labelsize=6)
         ax3.xaxis.set_tick_params(labelsize=8)
         ax3.grid(axis='x')
         ax4.set_title('Доля вакансий по городам', fontdict={'fontsize': 8})
         other = 1 - sum([x for x in self.statistics6.values()])
-        ax4.pie(list(self.statistics6.values()) + [other], labels=list(self.statistics6.keys()) + ['Другие'], textprops={'fontsize': 6})
+        ax4.pie(list(self.statistics6.values()) + [other], textprops={'fontsize': 6}, labels=list(self.statistics6.keys()) + ['Другие'])
         plt.tight_layout()
         plt.savefig('graph.png')
 
@@ -218,4 +227,5 @@ class Report:
         config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
         pdfkit.from_string(pdf_template, 'report.pdf', options={"enable-local-file-access": ""}, configuration=config)
 
-InputConnect()
+input_connect = InputConnect()
+input_connect.generate_all()
