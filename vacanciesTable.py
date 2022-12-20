@@ -44,8 +44,34 @@ true_false = {
 
 
 class Vacancy:
+    """
+    Класс для представления вакансии.
+    Attributes:
+        name (str): Название вакансии
+        description (str): Описание вакансии
+        key_skills (list): Список с навыками
+        experience_id (str): Опыт работы
+        premium (str): Премиум-вакансия
+        employer_name (str): Название компании
+        salary (int): Средняя зарплата
+        area_name (str): Название региона
+        published_at (str): Дата публикации вакансии
+    """
     def __init__(self, name, description, key_skills, experience_id, premium, employer_name, salary, area_name,
                  published_at):
+        """
+        Инициализирует объект Vacancy.
+        Args:
+            name (str): Название вакансии
+            description (str): Описание вакансии
+            key_skills (list): Список с навыками
+            experience_id (str): Опыт работы
+            premium (str): Премиум-вакансия
+            employer_name (str): Название компании
+            salary (str or int or float): Средняя зарплата
+            area_name (str): Название региона
+            published_at (str): Дата публикации вакансии
+        """
         self.name = name
         self.description = description
         self.key_skills = key_skills
@@ -58,18 +84,44 @@ class Vacancy:
 
 
 class Salary:
+    """
+    Класс для представления зарплаты.
+    Attributes:
+        salary_from (int): Нижняя граница вилки оклада
+        salary_to (int): Верхняя граница вилки оклада
+        salary_gross (str): Оклад указан до вычета налогов
+        salary_currency (str): Идентификатор валюты оклада
+    """
     def __init__(self, salary_from, salary_to, salary_gross, salary_currency):
+        """
+        Инициализирует объект Salary.
+        Args:
+            salary_from (str or int or float): Нижняя граница вилки оклада
+            salary_to (str or int or float): Верхняя граница вилки оклада
+            salary_gross (str): Оклад указан до вычета налогов
+            salary_currency (str): Идентификатор валюты оклада
+        """
         self.salary_from = salary_from
         self.salary_to = salary_to
         self.salary_gross = salary_gross
         self.salary_currency = salary_currency
 
     def get_salary_in_rub(self):
+        """
+        Вычисляет среднюю зарплату из вилки и переводит в рубли при помощи словаря - currency_to_rub.
+        :return:
+            float: Средняя зарплата в рублях
+        """
         return (float(self.salary_from) + float(self.salary_to)) / 2 * currency_to_rub[self.salary_currency]
 
 
 class InputConect:
+    """
+       Обрабатывает параметры, вводимые пользователями: фильтры, сортировка, диапазон вывода, требуемые столбцы;
+       печатает таблицы на экран.
+    """
     def print_data(self):
+        """Получает параметры, вводимые пользователями, и на их основании печатает таблицу."""
         input_params = InputConect.input_params()
         if input_params is not None:
             file_name, field, value_field, sort_param, is_reverse_sort, borders, fields = input_params
@@ -79,6 +131,13 @@ class InputConect:
 
     @staticmethod
     def input_params():
+        """
+        Обрабатывает параметры для печати, вводимые пользователями; не допускает печать, если параметры некорректны.
+        :return:
+            str: Название файла; поле, по которому происходит фильтрация;
+            значения поля, по которому происходит фильтрация; параметр сортировки; порядок сортировки;
+            диапазон вывода; поля для печати
+        """
         file_name = input('Введите название файла: ')
         filter_param = input('Введите параметр фильтрации: ')
         sort_param = input('Введите параметр сортировки: ')
@@ -111,25 +170,62 @@ class InputConect:
 
     @staticmethod
     def get_key(dictionary, elem):
+        """
+        Возвращает ключ словаря по его значению.
+        :param dictionary: Словарь, из которого нужно получить ключ (dict)
+        :param elem: Значение, по которому будет извлекаться ключ (str or int or float)
+        :return:
+            str: Ключ словаря, найденный по его значению
+        """
         for key, value in dictionary.items():
             if value == elem:
                 return key
 
     @staticmethod
     def get_borders_table(dictionary, borders):
+        """
+        Возращает границы для печати таблицы.
+        :param dictionary: Список, к которому будут применяться границы (list)
+        :param borders: Строка из двух границ (str)
+        :return:
+            int: левая граница вывода таблицы, права граница вывода таблицы
+        >>> InputConect.get_borders_table([1, 2, 3, 4, 5, 6], '')
+        (0, 6)
+        >>> InputConect.get_borders_table([1, 2, 3, 4, 5, 6], '2 4')
+        (1, 3)
+        >>> InputConect.get_borders_table([1, 2, 3, 4, 5, 6], '5')
+        (4, 6)
+        """
         step = borders.split()
         step_start = int(step[0]) - 1 if len(step) > 0 else 0
         step_finish = int(step[1]) - 1 if len(step) == 2 else len(dictionary)
-        return  step_start, step_finish
+        return step_start, step_finish
 
     @staticmethod
     def get_fields_table(table, fields):
+        """
+        Возвращает поля для печати таблицы.
+        :param table: Таблица, которая будет напечатана
+        :param fields: Поля, которые будут выведены (если их нет, будут выведены все поля таблицы)
+        :return:
+            list: поля таблицы, которые будут напечатаны
+        """
         columns = list(filter(None, fields.split(", ")))
         all_columns = ['№'] + columns if len(columns) > 0 else table.field_names
         return all_columns
 
     @staticmethod
     def print_table(vacancies_objects, field, value_field, sort_param, is_reverse_sort, borders, fields):
+        """
+        Создает и печатает таблицу на основании параметров, введенных пользователем.
+        :param vacancies_objects: Список с вакансиями (list)
+        :param field: Поле, по которому происходит фильтрация (str)
+        :param value_field: Значение поля, по которому происходит фильтрация (str)
+        :param sort_param: Параметр, по которому происходит сортировка (str)
+        :param is_reverse_sort: Порядок сортировки (str)
+        :param borders: Границы вывода таблицы (list)
+        :param fields: Поля таблицы для печати (str)
+        """
         vacancy_dictionary = vacancies_objects
         if len(vacancy_dictionary) == 0:
             print('Нет данных')
@@ -167,8 +263,36 @@ class InputConect:
 
         print(table_vacancies.get_string(start=border[0], end=border[1], fields=columns))
 
+    # @staticmethod
+    # def formatter_date(date, form_date, result_form):
+    #     return datetime.strptime(date, form_date).strftime(result_form)
+
+    @staticmethod
+    def formatter_date_1(input_date, result_form):
+        i = 0
+        date = ''
+        for char in input_date:
+            date += str(char)
+            i += 1
+            if i == 10:
+                break
+        if result_form == '%Y-%m-%d':
+            list_date = date.split('.')
+            return f'{list_date[2]}-{list_date[1]}-{list_date[0]}'
+        else:
+            list_date = date.split('-')
+            return f'{list_date[2]}.{list_date[1]}.{list_date[0]}'
+
+
     @staticmethod
     def formatter(input_dictionary):
+        """
+        Форматирует данные, полученные из CSV файла: переводит все слова на русский, создает поле со средней зарплатой,
+        преобразует дату в формат "%d.%m.%Y".
+        :param input_dictionary: Первоначальный список вакансий, полученный из CSV файлы (list)
+        :return:
+            dict: Отформатированный список с вакансиями
+        """
         dictionary = []
         for row in input_dictionary:
             new_row = {}
@@ -176,8 +300,10 @@ class InputConect:
                 if type(getattr(row, field)).__name__ == 'list':
                     new_row[dictionary_keys[field]] = '\n'.join(getattr(row, field))
                 elif field == 'published_at':
-                    new_row[dictionary_keys[field]] = datetime.strptime(getattr(row, field),
-                                                                        '%Y-%m-%dT%H:%M:%S%z').strftime("%d.%m.%Y")
+                    # new_row[dictionary_keys[field]] = InputConect.formatter_date(getattr(row, field),
+                    #                                                              '%Y-%m-%dT%H:%M:%S%z', "%d.%m.%Y")
+                    new_row[dictionary_keys[field]] = InputConect.formatter_date_1(getattr(row, field), "%d.%m.%Y")
+
                 elif field[:6] == 'salary':
                     salary_from = int(float(getattr(row, 'salary').salary_from))
                     salary_to = int(float(getattr(row, 'salary').salary_to))
@@ -201,6 +327,30 @@ class InputConect:
 
     @staticmethod
     def filter_dict_vacancies(field, value_field, vacancies_data):
+        """
+        Фильтрует список вакансий по определенному значению конкретного поля.
+        :param field: Поле, по которому происходит фильтрация (str)
+        :param value_field:  Значение этого поля, по которому происходит фильтрация (str)
+        :param vacancies_data: Список вакансий, к которому применяется фильтрация (list)
+        :return:
+            list: Отфильтрованный по определенному значению список с вакансиями
+        >>> len(InputConect.filter_dict_vacancies('Название', 'Аналитик', [Vacancy('Аналитик', 'Первый',[], '', '', '', Salary('', '', '',''), '', ''), Vacancy('программист', 'Второй',[], '', '', '', Salary('', '', '',''), '', ''), Vacancy('Аналитик', 'Третий',[], '', '', '', Salary('', '', '',''), '', '')]))
+        2
+        >>> len(InputConect.filter_dict_vacancies('Навыки', 'C#', [Vacancy('Аналитик', 'Первый',['C#'], '', '', '', Salary('', '', '',''), '', ''), Vacancy('программист', 'Второй',['C#', 'Python'], '', '', '', Salary('', '', '',''), '', ''), Vacancy('Аналитик', 'Третий',['C', 'Python'], '', '', '', Salary('', '', '',''), '', '')]))
+        2
+        >>> len(InputConect.filter_dict_vacancies('Навыки', 'C#, Python', [Vacancy('Аналитик', 'Первый',['C#'], '', '', '', Salary('', '', '',''), '', ''), Vacancy('программист', 'Второй',['C#', 'Python'], '', '', '', Salary('', '', '',''), '', ''), Vacancy('Аналитик', 'Третий',['C', 'Python'], '', '', '', Salary('', '', '',''), '', '')]))
+        1
+        >>> len(InputConect.filter_dict_vacancies('Оклад', '50000', [Vacancy('Аналитик', 'Первый',['C#'], '', '', '', Salary('40000', '60000', '',''), '', ''), Vacancy('программист', 'Второй',['C#', 'Python'], '', '', '', Salary('100000', '100000', '',''), '', ''), Vacancy('Аналитик', 'Третий',['C', 'Python'], '', '', '', Salary('20000', '30000', '',''), '', '')]))
+        1
+        >>> len(InputConect.filter_dict_vacancies('Опыт работы', 'Нет опыта', [Vacancy('Аналитик', 'Первый',['C#'], 'between3And6', '', '', Salary('40000', '60000', '',''), '', ''), Vacancy('программист', 'Второй',['C#', 'Python'], 'noExperience', '', '', Salary('100000', '100000', '',''), '', ''), Vacancy('Аналитик', 'Третий',['C', 'Python'], 'noExperience', '', '', Salary('20000', '30000', '',''), '', '')]))
+        2
+        >>> len(InputConect.filter_dict_vacancies('Идентификатор валюты оклада', 'Рубли', [Vacancy('Аналитик', 'Первый',['C#'], 'between3And6', '', '', Salary('40000', '60000', '',''), '', ''), Vacancy('программист', 'Второй',['C#', 'Python'], 'noExperience', '', '', Salary('100000', '100000', '',''), '', ''), Vacancy('Аналитик', 'Третий',['C', 'Python'], 'noExperience', '', '', Salary('20000', '30000', '',''), '', '')]))
+        0
+        >>> len(InputConect.filter_dict_vacancies('Дата публикации вакансии', '06.06.2006', [Vacancy('Аналитик', 'Первый',['C#'], 'between3And6', '', '', Salary('40000', '60000', '',''), '', '2006-06-06'), Vacancy('программист', 'Второй',['C#', 'Python'], 'noExperience', '', '', Salary('100000', '100000', '',''), '', '07.06.2006'), Vacancy('Аналитик', 'Третий',['C', 'Python'], 'noExperience', '', '', Salary('20000', '30000', '',''), '', '2006-06-06')]))
+        2
+        >>> len(InputConect.filter_dict_vacancies('Премиум-вакансия', 'Да', [Vacancy('Аналитик', 'Первый',['C#'], 'between3And6', 'True', '', Salary('40000', '60000', '',''), '', '2006-06-06'), Vacancy('программист', 'Второй',['C#', 'Python'], 'noExperience', '', '', Salary('100000', '100000', '',''), '', '07.06.2006'), Vacancy('Аналитик', 'Третий',['C', 'Python'], 'noExperience', '', '', Salary('20000', '30000', '',''), '', '2006-06-06')]))
+        1
+        """
         if field in dictionary_keys.values():
             field = InputConect.get_key(dictionary_keys, field)
 
@@ -212,7 +362,8 @@ class InputConect:
             return list(filter(lambda row: int(float(getattr(row, field).salary_from)) <=
                                            value_field <= int(float(getattr(row, field).salary_to)), vacancies_data))
         if field == 'published_at':
-            value_field = datetime.strptime(value_field, '%d.%m.%Y').strftime('%Y-%m-%d')
+            # value_field = InputConect.formatter_date(value_field, '%d.%m.%Y', '%Y-%m-%d')
+            value_field = InputConect.formatter_date_1(value_field, '%Y-%m-%d')
             return list(filter(lambda row: getattr(row, field).find(value_field) != -1, vacancies_data))
         if field == 'experience_id':
             value_field = InputConect.get_key(dictionary_experience_id, value_field)
@@ -227,6 +378,11 @@ class InputConect:
 
     @staticmethod
     def sort_dict_vacancies(sort_param):
+        """
+        Определяет, как будет сортироваться таблица.
+        :param sort_param: Параметр сортировки, который ввел пользователь
+        :return: Способ сортировки в зависимости от параматра сортировки
+        """
         if sort_param in dictionary_keys.values():
             sort_param = InputConect.get_key(dictionary_keys, sort_param)
 
@@ -241,12 +397,34 @@ class InputConect:
 
 
 class DataSet:
+    """
+    Класс для получения данных из файла CSV.
+    Attributes:
+        file_name (str): Название CSV файла
+        vacancies_objects (list): Лист с вакансиями
+    """
     def __init__(self, file_name):
+        """
+        Инициализирует объект DataSet, получает vacancies_objects с помощью метода чтения CSV файла - csv_reader.
+        Args:
+            file_name (str): Название CSV файла
+            vacancies_objects (list): Лист с вакансиями
+        """
         self.file_name = file_name
         self.vacancies_objects = DataSet.csv_reader(file_name)
 
     @staticmethod
     def delete_tags(value):
+        """
+        Отчищает строку от тегов.
+        :param value: Строка (str)
+        :return:
+            str: Строка, отчищенная от тегов
+        >>> DataSet.delete_tags('No tags')
+        'No tags'
+        >>> DataSet.delete_tags('With<strong> tags')
+        'With tags'
+        """
         temp_value = ''
         while value.find('<') != - 1:
             temp_value += value[:value.find('<')]
@@ -257,6 +435,12 @@ class DataSet:
 
     @staticmethod
     def csv_reader(file_name):
+        """
+        Читает CSV файл и создает vacancy_dictionary (лист с вакансиями) с объектами Vacancy.
+        :param file_name: Имя файла CSV, из которого будут читаться данные (str)
+        :return:
+            list: Лист с вакансиями
+        """
         with open(file_name, newline='', encoding='utf-8-sig') as file:
             vacancies_csv = csv.reader(file)
             vacancy_data = [row for row in vacancies_csv]
@@ -284,8 +468,7 @@ class DataSet:
                             dic['employer_name'], Salary(dic['salary_from'], dic['salary_to'], dic['salary_gross'],
                             dic['salary_currency']), dic['area_name'], dic['published_at']))
             return vacancy_dictionary
-
-
 def main():
+    """Создает объект InputConect, печатает данные в таблицу."""
     a = InputConect()
     a.print_data()
