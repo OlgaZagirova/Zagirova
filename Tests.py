@@ -12,6 +12,7 @@ class Test(unittest.TestCase):
         self.table = PrettyTable()
         self.fields1 = ''
         self.fields2 = 'Название, Описание'
+        
     def test_formatter_date(self):
         dict_vacancies = [self.vacancy]
         self.assertEqual(InputConect.formatter(dict_vacancies)[0]['Дата публикации вакансии'], '06.07.2022')
