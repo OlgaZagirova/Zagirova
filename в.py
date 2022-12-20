@@ -1,7 +1,7 @@
 import statisticsReport
 import vacanciesTable
 
-input_data = input('Вакансии статистика: ')
+input_data = input('Вакансии или статистика?: ')
 
 if __name__ == '__main__':
     if input_data == 'Вакансии':
