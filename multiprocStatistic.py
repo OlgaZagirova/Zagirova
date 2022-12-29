@@ -138,7 +138,6 @@ if __name__ == '__main__':
     solve.divide_file_by_year()
     solve.get_statistic()
     solve.print_statistic()
-
     solve = Solution("C:\\Users\\4853459\\PycharmProjects\\Zagirova\\vacancies_by_year.csv", "Программист")
     solve.divide_file_by_year()
     cProfile.run("solve.create_statistic_by_year_mltproc_on()", sort="cumtime")
