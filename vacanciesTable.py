@@ -324,7 +324,6 @@ class InputConect:
             dictionary.append(new_row)
         return dictionary
 
-
     @staticmethod
     def filter_dict_vacancies(field, value_field, vacancies_data):
         """
