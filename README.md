@@ -11,3 +11,6 @@
 2. Форматирование даты с помощью слайса даты:
 ![image](https://user-images.githubusercontent.com/92687732/209934331-96fe35a0-1621-4fe5-9a03-b026a7949a22.png)
 
+# Задание 3.2.1 Разделить данные
+![image](https://user-images.githubusercontent.com/92687732/209948353-8494be74-82e1-41d9-96f4-e8817fe7300e.png)
+
