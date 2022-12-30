@@ -26,7 +26,7 @@
 # Задание 3.3.1 Курсы валют
 Частотность
 
-![image](https://user-images.githubusercontent.com/92687732/210055853-ed386105-8753-4332-9e60-6c57a35b89b8.png)
+![image](https://user-images.githubusercontent.com/92687732/210061900-ed79c5be-6938-4800-947c-56303c437072.png)
 
 Новые разделенные CSV-файлы:
 
