@@ -23,3 +23,13 @@
 # Задание 3.2.3 Concurrent futures
 ![image](https://user-images.githubusercontent.com/92687732/209965364-1a36a0eb-b52f-4591-89a3-df2b85fa3b63.png)
 
+# Задание 3.3.1 Курсы валют
+Частотность
+
+![image](https://user-images.githubusercontent.com/92687732/210055853-ed386105-8753-4332-9e60-6c57a35b89b8.png)
+
+Новые разделенные CSV-файлы:
+
+![image](https://user-images.githubusercontent.com/92687732/210057099-b1c207c0-a6b5-4ec4-ab44-6c26dcfa1353.png)
+
+
