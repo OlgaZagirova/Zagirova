@@ -1,5 +1,4 @@
 import math
-import os
 import pandas as pd
 from multiprocessing import Process, Queue
 pd.options.mode.chained_assignment = None
@@ -41,6 +40,7 @@ def calc_year_stat_mp(file_name, job_name, q, currencies):
     data_job = df[df['name'].str.contains(job_name, case=False)]
     q.put([int(df['published_at'].values[0][:4]), df.shape[0], math.floor(df['salary'].mean()), data_job.shape[0], math.floor(data_job['salary'].mean()), df])
 
+
 def calc_year_stats_mp():
     global year_by_vac_num, year_by_salary, year_by_vac_num_job, year_by_salary_job, df_res
     process = []
@@ -68,7 +68,7 @@ def calc_year_stats_mp():
 def calc_area_stats():
     global vac_num_by_area, salary_by_area
     df = pd.concat(df_res, ignore_index=True)
-    df.head(100).to_csv('3-3-2.csv', index=False, encoding='utf8')
+    df.head(100).to_csv('3-4-1.csv', index=False, encoding='utf8')
     all_vac_num = df.shape[0]
     vac_percent = int(all_vac_num * 0.01)
 
