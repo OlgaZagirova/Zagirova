@@ -1,46 +1,64 @@
-import pandas as pd
 import requests
-import lxml
+import pandas as pd
+@staticmethod
+def get_currencies(filename):
+    pd.set_option('expand_frame_repr', False)
+    df = pd.read_csv(filename)
+    sorted_currencies = df.groupby('salary_currency')['salary_currency'].count()
+    sorted_currencies = sorted_currencies[sorted_currencies > 5000]
+    print(sorted_currencies)
+    dates = []
+    sorted_currencies = sorted_currencies.to_dict()
+    sorted_currencies = list(sorted_currencies.keys())
+    sorted_currencies.remove('RUR')
+    date_sort = df.sort_values(by='published_at')['published_at']
+    start_year = int(date_sort.iloc[1].split('-')[0])
+    start_month = int(date_sort.iloc[1].split('-')[1])
+    end_year = int(date_sort.iloc[-1].split('-')[0])
+    end_month = int(date_sort.iloc[-1].split('-')[1])
+    results = pd.DataFrame(columns=['date'] + sorted_currencies)
 
-pd.set_option("expand_frame_repr", False)
+    while start_year != end_year or start_month != end_month:
+        if start_month in range(1, 10):
+            dates.append('0{0}/{1}'.format(start_month, start_year))
+        else:
+            dates.append('{0}/{1}'.format(start_month, start_year))
+        start_month += 1
+        if start_month == 13:
+            start_month = 1
+            start_year += 1
+    if start_month in range(1, 10):
+        dates.append('0{0}/{1}'.format(start_month, start_year))
+    else:
+        dates.append('{0}/{1}'.format(start_month, start_year))
+    print('Даты: ',dates)
 
-df = pd.read_csv("vacancies_dif_currencies.csv")
-published_at_dates = df.loc[:, "published_at"]
+    for i, j in enumerate(dates):
+        url = f'https://www.cbr.ru/scripts/XML_daily.asp?date_req=01/{j}d=1'
+        response = requests.get(url)
+        curr = pd.read_xml(response.text)
+        curr_sort = curr.loc[curr['CharCode'].isin(sorted_currencies + ['BYN'])]
+        month_currencies = {}
+        for currency in sorted_currencies:
+            value = 0
+            if currency == "RUR":
+                continue
+            if currency == 'BYR' or currency == 'BYN':
+                value = float(
+                    curr_sort.loc[curr_sort['CharCode'].isin(['BYR', 'BYN'])]['Value'].values[0].replace(',', '.')) / \
+                        (curr_sort.loc[curr_sort['CharCode'].isin(['BYR', 'BYN'])]['Nominal'].values[0])
+                month_currencies[currency] = value
+            else:
+                value = float(curr_sort.loc[curr_sort['CharCode'] == currency]['Value'].values[0].replace(',', '.')) / \
+                        (curr_sort.loc[curr_sort['CharCode'] == currency]['Nominal'].values[0])
+                month_currencies[currency] = value
+        date = j.split('/')
+        result = [f'{date[1]}-{date[0]}']
+        for key, value in month_currencies.items():
+            result.append(month_currencies[key])
+        results.loc[i] = result
 
-oldest_record_publication_month = published_at_dates.min()[5:7]
-latest_record_publication_month = published_at_dates.max()[5:7]
+    results.to_csv('currencies.csv')
+    print(results.head())
 
-proper_currencies = [x for x in df
- .groupby("salary_currency")
- .size()
- .loc[lambda freq: freq >= 5000]
- .index
- .values if x != "RUR"]
-
-result = pd.DataFrame(columns=["date"] + proper_currencies)
-
-to_get_currencies_exchanges_dates = [
-    f"{f'0{month}' if month in range(1, 9 + 1) else month}/{year}" for year in range(2003, 2022 + 1)
-    for month in range(int(oldest_record_publication_month) if year == 2003 else 1,
-                       int(latest_record_publication_month) if year == 2022 else 12 + 1)
-]
-
-if "BYR" in proper_currencies and "BYN" not in proper_currencies:
-    proper_currencies.append("BYN")
-elif "BYN" in proper_currencies:
-    proper_currencies.append("BYR")
-
-
-for i in range(len(to_get_currencies_exchanges_dates)):
-    date = to_get_currencies_exchanges_dates[i]
-    url = f"https://www.cbr.ru/scripts/XML_daily.asp?date_req=15/{date}d=1"
-    response = requests.get(url)
-    cur_df = pd.read_xml(response.text)
-    cur_filtered_df = cur_df.loc[cur_df['CharCode'].isin(proper_currencies)]
-    values = cur_filtered_df["Value"].apply(lambda x: float(x.replace(",", ".")))
-    nominals = cur_filtered_df["Nominal"]
-    exchanges = values / nominals
-    result.loc[i] = [date.replace("/", "-")] + [x for x in exchanges]
-
-result = result.set_index(result.loc[:, "date"])
-result.to_csv("cb_currencies.csv", index=False)
+get_currencies('vacancies_dif_currencies.csv')
