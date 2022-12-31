@@ -33,5 +33,6 @@
 ![image](https://user-images.githubusercontent.com/92687732/210057099-b1c207c0-a6b5-4ec4-ab44-6c26dcfa1353.png)
 
 # Задание 3.5.2
-![image](https://user-images.githubusercontent.com/92687732/210129307-5138c5d2-94b4-4c06-9d2d-618ec567bf99.png)
+![image](https://user-images.githubusercontent.com/92687732/210129704-66647b93-7d37-4991-b555-a2f914490a1e.png)
+
 
