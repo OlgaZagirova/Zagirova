@@ -35,4 +35,12 @@
 # Задание 3.5.2
 ![image](https://user-images.githubusercontent.com/92687732/210129704-66647b93-7d37-4991-b555-a2f914490a1e.png)
 
+# Задание 3.5.3
+![image](https://user-images.githubusercontent.com/92687732/210131613-9f29bdf9-eac6-40e7-a574-2df191b15bbd.png)
+![image](https://user-images.githubusercontent.com/92687732/210131616-a97d9547-1d2f-4bc9-89b5-60391ee68ec8.png)
+![image](https://user-images.githubusercontent.com/92687732/210131619-05160f91-4480-4088-9417-f14986b28233.png)
+![image](https://user-images.githubusercontent.com/92687732/210131623-a5fe514c-3df6-49ce-ac3c-6515628eac90.png)
+![image](https://user-images.githubusercontent.com/92687732/210131631-62066dbc-2eb8-4e18-8423-61df40fb98c8.png)
+![image](https://user-images.githubusercontent.com/92687732/210131633-4fd959d4-546d-440e-84a1-31d4ef2b8fdd.png)
+![image](https://user-images.githubusercontent.com/92687732/210131671-39db9f7e-f4d3-4c65-b11a-273ee43cb71b.png)
 
